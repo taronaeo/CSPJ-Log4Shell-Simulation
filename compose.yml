@@ -1,6 +1,15 @@
 services:
   log4shell-web:
-    restart: unless-stopped
     image: "ghcr.io/christophetd/log4shell-vulnerable-app@sha256:6f88430688108e512f7405ac3c73d47f5c370780b94182854ea2cddc6bd59929"
+    restart: unless-stopped
     ports:
       - "8080:8080"
+  modsecurity-firewall:
+    image: "owasp/modsecurity-crs:4.3.0-nginx-alpine-202406090906"
+    restart: unless-stopped
+    depends_on:
+      - log4shell-web
+    ports:
+      - "80:8080"
+    environment:
+      BACKEND: "http://192.168.88.129:8080"
